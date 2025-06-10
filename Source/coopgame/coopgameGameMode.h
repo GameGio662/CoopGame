@@ -13,7 +13,8 @@ class AcoopgameGameMode : public AGameModeBase
 
 public:
 	AcoopgameGameMode();
-};
 
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+};
 
 

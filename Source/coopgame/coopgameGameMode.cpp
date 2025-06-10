@@ -2,14 +2,37 @@
 
 #include "coopgameGameMode.h"
 #include "coopgameCharacter.h"
-#include "UObject/ConstructorHelpers.h"
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/PlayerStart.h"
+#include "Engine/World.h"
 
 AcoopgameGameMode::AcoopgameGameMode()
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
-	if (PlayerPawnBPClass.Class != NULL)
+	DefaultPawnClass = AcoopgameCharacter::StaticClass();
+}
+
+void AcoopgameGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if (NewPlayer && !NewPlayer->GetPawn())
 	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
+		TArray<AActor*> PlayerStarts;
+		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+
+		if (PlayerStarts.Num() > 0)
+		{
+			AActor* ChosenStart = PlayerStarts[FMath::RandRange(0, PlayerStarts.Num() - 1)];
+
+			FVector SpawnLocation = ChosenStart->GetActorLocation();
+			FRotator SpawnRotation = ChosenStart->GetActorRotation();
+
+			APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnLocation, SpawnRotation);
+			if (NewPawn)
+			{
+				NewPlayer->Possess(NewPawn);
+			}
+		}
 	}
 }

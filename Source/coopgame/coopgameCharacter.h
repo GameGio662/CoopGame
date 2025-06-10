@@ -1,73 +1,61 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Logging/LogMacros.h"
+#include "InputActionValue.h"
 #include "coopgameCharacter.generated.h"
 
-class USpringArmComponent;
 class UCameraComponent;
+class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
-struct FInputActionValue;
+class ACoopButton;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
-
-UCLASS(config=Game)
+UCLASS(config = Game)
 class AcoopgameCharacter : public ACharacter
 {
-	GENERATED_BODY()
-
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
-	
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* DefaultMappingContext;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
+    GENERATED_BODY()
 
 public:
-	AcoopgameCharacter();
-	
+    AcoopgameCharacter();
+
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
+    virtual void BeginPlay() override;
 
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+    // Funzione chiamata dal client per dire al server di eseguire l’interazione
+    UFUNCTION(Server, Reliable, WithValidation)
+    void ServerInteract();
 
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-			
-
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	// To add mapping context
-	virtual void BeginPlay();
+    void Interact();
+    void Move(const FInputActionValue& Value);
+    void Look(const FInputActionValue& Value);
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+    USpringArmComponent* CameraBoom;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+    UCameraComponent* FollowCamera;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    UInputMappingContext* DefaultMappingContext;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    UInputAction* JumpAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    UInputAction* MoveAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    UInputAction* LookAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    UInputAction* InteractAction;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated)
+    ACoopButton* CurrentButton;
 };
-
