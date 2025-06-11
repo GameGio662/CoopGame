@@ -26,11 +26,10 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    // Funzione chiamata dal client per dire al server di eseguire l’interazione
     UFUNCTION(Server, Reliable, WithValidation)
-    void ServerInteract();
+ /*   void ServerInteract();
 
-    void Interact();
+    void Interact();*/
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
 

@@ -88,29 +88,29 @@ void AcoopgameCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void AcoopgameCharacter::Interact()
-{
-    if (HasAuthority())
-    {
-        if (CurrentButton)
-        {
-            CurrentButton->PressButton(this);
-        }
-    }
-    else
-    {
-        ServerInteract();
-    }
-}
-
-void AcoopgameCharacter::ServerInteract_Implementation()
-{
-    if (CurrentButton)
-    {
-        CurrentButton->PressButton(this);
-    }
-}
-
+//void AcoopgameCharacter::Interact()
+//{
+//    if (HasAuthority())
+//    {
+//        if (CurrentButton)
+//        {
+//            CurrentButton->PressButton(this);
+//        }
+//    }
+//    else
+//    {
+//        ServerInteract();
+//    }
+//}
+//
+//void AcoopgameCharacter::ServerInteract_Implementation()
+//{
+//    if (CurrentButton)
+//    {
+//        CurrentButton->PressButton(this);
+//    }
+//}
+//
 bool AcoopgameCharacter::ServerInteract_Validate()
 {
     return true;
